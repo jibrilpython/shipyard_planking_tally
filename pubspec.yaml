@@ -1,0 +1,54 @@
+name: shipyard_planking_tally
+description: "A digital archive for cataloging historical shipwright planking tools — holdfasts, plank dogs, spiling clamps, and more."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.5.1
+  flutter_screenutil: ^5.9.3
+  google_fonts: ^6.2.1
+  shared_preferences: ^2.2.3
+  image_picker: ^1.1.2
+  path_provider: ^2.1.3
+  uuid: ^4.4.0
+  sensors_plus: ^5.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/icon.png"
+  adaptive_icon_background: "#0F1216"
+  adaptive_icon_foreground: "assets/images/icon.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#0F1216"
+  image: assets/images/logo.png
+  android: true
+  ios: true
+  android_12:
+    image: assets/images/logo.png
+    # icon_background_color: "#0F1216"
+  fullscreen: true
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/images/logo.png
+    - assets/images/icon.png

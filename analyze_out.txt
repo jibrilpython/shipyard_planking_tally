@@ -1,0 +1,12 @@
+Analyzing lib...
+
+  error - screens\info_screen.dart:192:50 - Undefined name 'ShipbuildingTradition'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+warning - screens\showcase_screen.dart:33:21 - The value of the field '_random' isn't used. Try removing the field, or using it. - unused_field
+   info - common\photo_bottom_sheet.dart:21:19 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - screens\home_screen.dart:312:31 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - screens\home_screen.dart:313:24 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - screens\showcase_screen.dart:181:13 - 'scale' is deprecated and shouldn't be used. Use scaleByVector3, scaleByVector4, or scaleByDouble instead. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - screens\showcase_screen.dart:210:35 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - screens\showcase_screen.dart:211:28 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+
+8 issues found.

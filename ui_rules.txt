@@ -1,0 +1,22 @@
+1. DESIGN PHILOSOPHY
+Visual: “The Shipwright’s Ledger” — Inspired by 19th-century maritime blueprints and heavy timber construction. 
+The UI uses a "structural joinery" approach: clean, interlocking Bento-box panels that mimic the way planks 
+are fitted to a frame. Instead of thin lines, use solid, "load-bearing" borders and deep, oceanic depth.
+
+Mood: Timeless, nautical, artisanal, and incredibly stable.
+
+Important: No "tech-startup" gradients or playful animations. Every interaction should feel weighty and 
+deliberate. Avoid thin, spindly fonts—opt for something with a bit of "iron" in its weight to reflect 
+the hand-forged nature of the tools.
+
+2. COLORS
+#0F1216 — Main background (Deep Atlantic / Cold Forge black)
+#E4E7EB — Primary text & high contrast elements (Salted canvas / Weathered paper)
+#1B1E24 — Secondary panels / input fields (Dark Oak / Wet hull timber)
+#828D99 — Secondary text (Mist grey / Oxidized iron)
+#2A5B8A — Primary accent (Deep Mariner Blue — steady and traditional)
+#2D333B — Outline/Stroke (Cast iron / Bulkhead grey)
+#D14343 — Critical errors only (Signal buoy red)
+
+Important: Avoid glossy gradients. Keep the UI matte and high-contrast. Do not add your own colors; 
+strictly use the palette provided above to maintain the maritime aesthetic.
