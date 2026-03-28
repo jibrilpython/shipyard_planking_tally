@@ -114,77 +114,112 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildHeader(int count) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20.w, 50.h, 20.w, 24.h),
-      decoration: const BoxDecoration(
-        color: kPanelBg,
+      padding: EdgeInsets.fromLTRB(20.w, 56.h, 20.w, 20.h),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            kBackground,
+            kAccentSurface.withValues(alpha: 0.6),
+            kBackground,
+          ],
+        ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  'PLANKING TALLY',
+          // Top row: label + add button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(width: 18.w, height: 1.5.h, color: kAccent),
+                      SizedBox(width: 8.w),
+                      Text(
+                        'PLANKING TALLY',
+                        style: GoogleFonts.firaCode(
+                          color: kAccent,
+                          fontSize: 9.sp,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.8,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.h),
+                  Text(
+                    'The Archive',
+                    style: GoogleFonts.inter(
+                      color: kPrimaryText,
+                      fontSize: 30.sp,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -1.0,
+                      height: 1.0,
+                    ),
+                  ),
+                ],
+              ),
+              // Add button — thin bordered square
+              GestureDetector(
+                onTap: () {
+                  ref.read(inputProvider).clearAll();
+                  ref.read(imageProvider).clearImage();
+                  Navigator.pushNamed(context, '/add_screen');
+                },
+                child: Container(
+                  width: 44.w,
+                  height: 44.w,
+                  decoration: BoxDecoration(
+                    color: kAccent,
+                    borderRadius: BorderRadius.circular(kRadiusMedium),
+                    boxShadow: [
+                      BoxShadow(
+                        color: kAccent.withValues(alpha: 0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child:
+                      Icon(Icons.add_rounded, color: kPrimaryText, size: 26.sp),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+          // Count pill
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: kAccentSurface,
+                  borderRadius: BorderRadius.circular(kRadiusPill),
+                  border: Border.all(
+                      color: kAccent.withValues(alpha: 0.25), width: 1),
+                ),
+                child: Text(
+                  '$count TOOLS LOGGED',
                   style: GoogleFonts.firaCode(
                     color: kAccent,
                     fontSize: 9.sp,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 1.5,
+                    letterSpacing: 1.2,
                   ),
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  'The Archive',
-                  style: GoogleFonts.inter(
-                    color: kPrimaryText,
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                    height: 1.1,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                  decoration: BoxDecoration(
-                    color: kAccentSurface,
-                    borderRadius: BorderRadius.circular(kRadiusPill),
-                    border: Border.all(
-                        color: kAccent.withValues(alpha: 0.3), width: 1),
-                  ),
-                  child: Text(
-                    '$count TOOLS LOGGED',
-                    style: GoogleFonts.inter(
-                      color: kAccent,
-                      fontSize: 9.sp,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              ref.read(inputProvider).clearAll();
-              ref.read(imageProvider).clearImage();
-              Navigator.pushNamed(context, '/add_screen');
-            },
-            child: Container(
-              width: 48.w,
-              height: 48.w,
-              decoration: BoxDecoration(
-                color: kAccent,
-                borderRadius: BorderRadius.circular(kRadiusPill),
-                boxShadow: const [kAccentGlow],
               ),
-              child: Icon(Icons.add_rounded, color: kPrimaryText, size: 26.sp),
-            ),
+              SizedBox(width: 10.w),
+              Expanded(
+                  child: Container(
+                      height: 1, color: kOutline.withValues(alpha: 0.5))),
+            ],
           ),
         ],
       ),
@@ -192,16 +227,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildSearchBar() {
-    return Container(
-      height: 48.h,
+    final isFocused = _searchFocusNode.hasFocus;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      height: 44.h,
       decoration: BoxDecoration(
-        color: kPanelBg,
-        borderRadius: BorderRadius.circular(kRadiusPill),
+        border: Border(
+          bottom: BorderSide(
+            color: isFocused ? kAccent : kOutline.withValues(alpha: 0.6),
+            width: isFocused ? 1.8 : 1.0,
+          ),
+        ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 14.w),
       child: Row(
         children: [
-          Icon(Icons.search_rounded, color: kSecondaryText, size: 18.sp),
+          Icon(
+            Icons.search_rounded,
+            color: isFocused ? kAccent : kSecondaryText.withValues(alpha: 0.4),
+            size: 16.sp,
+          ),
           SizedBox(width: 10.w),
           Expanded(
             child: TextField(
@@ -209,12 +253,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               focusNode: _searchFocusNode,
               onChanged: (v) =>
                   ref.read(searchProvider.notifier).setSearchQuery(v),
-              style: GoogleFonts.inter(color: kPrimaryText, fontSize: 14.sp),
+              style: GoogleFonts.inter(
+                color: kPrimaryText,
+                fontSize: 12.sp,
+                letterSpacing: 0.3,
+              ),
               decoration: InputDecoration(
                 hintText: 'Search tools, forges, eras...',
                 hintStyle: GoogleFonts.inter(
-                  color: kSecondaryText.withValues(alpha: 0.5),
-                  fontSize: 13.sp,
+                  color: kSecondaryText.withValues(alpha: 0.35),
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
                 ),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
@@ -232,8 +281,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ref.read(searchProvider.notifier).clearSearchQuery();
                 setState(() {});
               },
-              child: Icon(Icons.cancel_rounded,
-                  color: kSecondaryText.withValues(alpha: 0.5), size: 18.sp),
+              child: Text(
+                'CLR',
+                style: GoogleFonts.firaCode(
+                  color: kAccent.withValues(alpha: 0.7),
+                  fontSize: 9.sp,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.5,
+                ),
+              ),
             ),
         ],
       ),
@@ -242,7 +298,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildFilterChips() {
     return SizedBox(
-      height: 44.h,
+      height: 36.h,
       child: ListView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -259,28 +315,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedFilter = type),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 180),
         curve: Curves.easeOutCubic,
-        margin: EdgeInsets.only(right: 8.w, top: 6.h, bottom: 6.h),
-        padding: EdgeInsets.symmetric(horizontal: 14.w),
-        decoration: BoxDecoration(
-          color: isSelected ? kAccent : kPanelBg,
-          borderRadius: BorderRadius.circular(kRadiusPill),
-          border: Border.all(
-            color: isSelected ? kAccent : kOutline,
-            width: 1,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            label.toUpperCase(),
-            style: GoogleFonts.inter(
-              color: isSelected ? kPrimaryText : kSecondaryText,
-              fontSize: 9.sp,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.0,
+        margin: EdgeInsets.only(right: 20.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label.toUpperCase(),
+              style: GoogleFonts.inter(
+                color: isSelected
+                    ? kPrimaryText
+                    : kSecondaryText.withValues(alpha: 0.45),
+                fontSize: 11.sp,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                letterSpacing: 1.0,
+              ),
             ),
-          ),
+            SizedBox(height: 3.h),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              height: 2,
+              width: isSelected ? label.length * 7.0.w : 0,
+              color: kAccent,
+            ),
+          ],
         ),
       ),
     );
@@ -300,6 +360,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         decoration: BoxDecoration(
           color: kPanelBg,
           borderRadius: BorderRadius.circular(kRadiusXLarge),
+          border: Border.all(color: kOutline, width: 1),
           boxShadow: [
             BoxShadow(
               color: kAccent.withValues(alpha: 0.12),
@@ -382,8 +443,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           entry.toolName,
                           style: GoogleFonts.inter(
                             color: kPrimaryText,
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
                             height: 1.2,
                           ),
                           maxLines: 2,
@@ -479,6 +540,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               fontSize: 13.sp,
             ),
           ),
+          SizedBox(height: 100.h), // Push content up
         ],
       ),
     );

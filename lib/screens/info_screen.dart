@@ -116,13 +116,43 @@ class InfoScreen extends ConsumerWidget {
             File(imagePath).existsSync())
           Image.file(File(imagePath), fit: BoxFit.cover)
         else
-          Container(
-            color: typeColor.withValues(alpha: 0.1),
-            child: Center(
-              child: Icon(
-                Icons.anchor_rounded,
-                size: 80.sp,
-                color: typeColor.withValues(alpha: 0.25),
+          // Blueprint Grid — premium empty state
+          CustomPaint(
+            painter: _BlueprintGridPainter(color: typeColor),
+            child: Container(
+              color: Colors.transparent,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 80.w,
+                      height: 80.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: typeColor.withValues(alpha: 0.6), width: 1.5),
+                        color: typeColor.withValues(alpha: 0.08),
+                      ),
+                      child: Icon(
+                        Icons.anchor_rounded,
+                        size: 38.sp,
+                        color: typeColor.withValues(alpha: 0.6),
+                      ),
+                    ),
+                    SizedBox(height: 14.h),
+                    Text(
+                      'NO PHOTOGRAPHIC\nRECORD',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.firaCode(
+                        color: typeColor.withValues(alpha: 0.5),
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2.0,
+                        height: 1.6,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -517,4 +547,43 @@ class _DeleteDialog extends StatelessWidget {
       ),
     );
   }
+}
+
+// Blueprint Grid Painter — premium empty state for info screen
+class _BlueprintGridPainter extends CustomPainter {
+  final Color color;
+  _BlueprintGridPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final bgPaint = Paint()..color = color.withValues(alpha: 0.06);
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bgPaint);
+
+    final gridPaint = Paint()
+      ..color = color.withValues(alpha: 0.12)
+      ..strokeWidth = 0.5
+      ..style = PaintingStyle.stroke;
+
+    const step = 24.0;
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+    }
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+
+    // Crosshair at center
+    final crossPaint = Paint()
+      ..color = color.withValues(alpha: 0.25)
+      ..strokeWidth = 1.0;
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    canvas.drawLine(Offset(cx - 20, cy), Offset(cx + 20, cy), crossPaint);
+    canvas.drawLine(Offset(cx, cy - 20), Offset(cx, cy + 20), crossPaint);
+    canvas.drawCircle(Offset(cx, cy), 4, crossPaint..style = PaintingStyle.stroke);
+  }
+
+  @override
+  bool shouldRepaint(covariant _BlueprintGridPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

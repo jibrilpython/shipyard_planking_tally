@@ -132,8 +132,8 @@ final appTheme = ThemeData(
     ),
     hintStyle: GoogleFonts.inter(
       color: kSecondaryText,
-      fontSize: 13.sp,
-      fontWeight: FontWeight.w300,
+      fontSize: 11.sp,
+      fontWeight: FontWeight.w400,
     ),
     labelStyle: GoogleFonts.inter(
       color: kSecondaryText,

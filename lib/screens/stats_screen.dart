@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -87,24 +88,39 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
 
   Widget _buildImmersiveHeader(int count) {
     return Container(
-      decoration: const BoxDecoration(
-        color: kPanelBg,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            kBackground,
+            kAccentSurface.withValues(alpha: 0.6),
+            kBackground,
+          ],
+        ),
       ),
-      padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.h),
+      padding: EdgeInsets.fromLTRB(20.w, 40.h, 20.w, 20.h),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'THE CHART ROOM',
-            style: GoogleFonts.firaCode(
-              color: kAccent,
-              fontSize: 10.sp,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 2.0,
-            ),
+          Row(
+            children: [
+              Container(width: 14.w, height: 1.5.h, color: kAccent),
+              SizedBox(width: 8.w),
+              Text(
+                'THE CHART ROOM',
+                style: GoogleFonts.firaCode(
+                  color: kAccent,
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2.0,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 4.h),
+          SizedBox(height: 8.h),
           Text(
             'Archival Intel',
             style: GoogleFonts.inter(
@@ -119,6 +135,92 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     );
   }
 
+  Widget _buildEmptyState() {
+    return SizedBox(
+      height: 480.h,
+      child: CustomPaint(
+        painter: _StatsGridPainter(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Compass rose
+            Container(
+              width: 100.w,
+              height: 100.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border:
+                    Border.all(color: kAccent.withValues(alpha: 0.3), width: 1),
+                color: kAccentSurface.withValues(alpha: 0.5),
+              ),
+              child: CustomPaint(
+                painter: _CompassRosePainter(),
+                child: Center(
+                  child: Icon(
+                    Icons.adjust_rounded,
+                    color: kAccent.withValues(alpha: 0.5),
+                    size: 28.sp,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 28.h),
+            Text(
+              'NO DATA TO CHART',
+              style: GoogleFonts.firaCode(
+                color: kAccent.withValues(alpha: 0.7),
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2.5,
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              'Log tools to the archive to\ngenerate analytical charts.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                color: kSecondaryText.withValues(alpha: 0.5),
+                fontSize: 13.sp,
+                height: 1.55,
+              ),
+            ),
+            SizedBox(height: 36.h),
+            // Ornamental data line rows
+            ...List.generate(
+                4,
+                (i) => Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 40.w, vertical: 5.h),
+                      child: Row(
+                        children: [
+                          Container(
+                              width: 8.w,
+                              height: 8.w,
+                              decoration: const BoxDecoration(
+                                  color: kAccent, shape: BoxShape.circle)),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                              child: Container(
+                            height: 1,
+                            color: kOutline.withValues(alpha: 0.3 - (i * 0.05)),
+                          )),
+                          SizedBox(width: 10.w),
+                          Text(
+                            '--- %',
+                            style: GoogleFonts.firaCode(
+                              color: kSecondaryText.withValues(alpha: 0.25),
+                              fontSize: 9.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildInteractiveToggle() {
     return Container(
       padding: EdgeInsets.all(4.r),
@@ -129,8 +231,10 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _toggleBtn('OVERVIEW', !_isDetailedMode, () => setState(() => _isDetailedMode = false)),
-          _toggleBtn('ANALYTICS', _isDetailedMode, () => setState(() => _isDetailedMode = true)),
+          _toggleBtn('OVERVIEW', !_isDetailedMode,
+              () => setState(() => _isDetailedMode = false)),
+          _toggleBtn('ANALYTICS', _isDetailedMode,
+              () => setState(() => _isDetailedMode = true)),
         ],
       ),
     );
@@ -161,7 +265,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   }
 
   Widget _buildHeroOverview(List<ShipwrightToolModel> entries) {
-    final workingCount = entries.where((e) => e.conditionState == ConditionState.workingCondition).length;
+    final workingCount = entries
+        .where((e) => e.conditionState == ConditionState.workingCondition)
+        .length;
     final totalCount = entries.length;
     final healthRatio = totalCount == 0 ? 0.0 : workingCount / totalCount;
 
@@ -283,11 +389,14 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
         final isHighlighted = _highlightedType == entry.key;
         final color = getToolTypeColor(entry.key);
         return GestureDetector(
-          onTap: () => setState(() => _highlightedType = isHighlighted ? null : entry.key),
+          onTap: () => setState(
+              () => _highlightedType = isHighlighted ? null : entry.key),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.all(16.r),
-            width: isHighlighted ? double.infinity : (MediaQuery.of(context).size.width - 56.w) / 2,
+            width: isHighlighted
+                ? double.infinity
+                : (MediaQuery.of(context).size.width - 56.w) / 2,
             decoration: BoxDecoration(
               color: isHighlighted ? color.withValues(alpha: 0.15) : kPanelBg,
               borderRadius: BorderRadius.circular(kRadiusXLarge),
@@ -324,7 +433,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                   SizedBox(height: 12.h),
                   Text(
                     'Representing ${(entry.value / (entries.isEmpty ? 1 : entries.length) * 100).toStringAsFixed(1)}% of your archival collection.',
-                    style: GoogleFonts.inter(color: kPrimaryText, fontSize: 11.sp, height: 1.4),
+                    style: GoogleFonts.inter(
+                        color: kPrimaryText, fontSize: 11.sp, height: 1.4),
                   ),
                 ],
               ],
@@ -357,26 +467,46 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           child: Row(
             children: [
               Container(
-                width: 12.w, height: 12.w,
-                decoration: BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: [
-                  BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 8, spreadRadius: 1)
-                ]),
+                width: 12.w,
+                height: 12.w,
+                decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                          color: color.withValues(alpha: 0.5),
+                          blurRadius: 8,
+                          spreadRadius: 1)
+                    ]),
               ),
               SizedBox(width: 16.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(state.label, style: GoogleFonts.inter(color: kPrimaryText, fontSize: 13.sp, fontWeight: FontWeight.w600)),
+                    Text(state.label,
+                        style: GoogleFonts.inter(
+                            color: kPrimaryText,
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w600)),
                     SizedBox(height: 4.h),
                     Stack(
                       children: [
-                        Container(height: 4.h, width: double.infinity, decoration: BoxDecoration(color: kOutline.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(kRadiusPill))),
+                        Container(
+                            height: 4.h,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: kOutline.withValues(alpha: 0.1),
+                                borderRadius:
+                                    BorderRadius.circular(kRadiusPill))),
                         AnimatedContainer(
                           duration: const Duration(seconds: 1),
                           height: 4.h,
-                          width: (MediaQuery.of(context).size.width - 100.w) * ratio,
-                          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(kRadiusPill)),
+                          width: (MediaQuery.of(context).size.width - 100.w) *
+                              ratio,
+                          decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(kRadiusPill)),
                         ),
                       ],
                     ),
@@ -384,7 +514,11 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                 ),
               ),
               SizedBox(width: 16.w),
-              Text('$count', style: GoogleFonts.firaCode(color: kPrimaryText, fontSize: 14.sp, fontWeight: FontWeight.w800)),
+              Text('$count',
+                  style: GoogleFonts.firaCode(
+                      color: kPrimaryText,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w800)),
             ],
           ),
         );
@@ -396,7 +530,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     final Map<ShipbuildingTradition, int> counts = {};
     for (final e in entries) {
       if (e.shipbuildingTradition != ShipbuildingTradition.unknown) {
-        counts[e.shipbuildingTradition] = (counts[e.shipbuildingTradition] ?? 0) + 1;
+        counts[e.shipbuildingTradition] =
+            (counts[e.shipbuildingTradition] ?? 0) + 1;
       }
     }
     if (counts.isEmpty) return _noData();
@@ -419,15 +554,23 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(e.key.label.toUpperCase(),
-                        style: GoogleFonts.inter(color: kPrimaryText, fontSize: 12.sp, fontWeight: FontWeight.w800)),
+                        style: GoogleFonts.inter(
+                            color: kPrimaryText,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w800)),
                     SizedBox(height: 4.h),
-                    Text('${(ratio * 100).toStringAsFixed(1)}% of collection heritage',
-                        style: GoogleFonts.inter(color: kSecondaryText, fontSize: 10.sp)),
+                    Text(
+                        '${(ratio * 100).toStringAsFixed(1)}% of collection heritage',
+                        style: GoogleFonts.inter(
+                            color: kSecondaryText, fontSize: 10.sp)),
                   ],
                 ),
               ),
               Text('${e.value}',
-                  style: GoogleFonts.firaCode(color: kAccent, fontSize: 18.sp, fontWeight: FontWeight.w800)),
+                  style: GoogleFonts.firaCode(
+                      color: kAccent,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w800)),
             ],
           ),
         );
@@ -438,7 +581,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   Widget _buildEraTimeline(List<ShipwrightToolModel> entries) {
     final Map<String, int> counts = {};
     for (final e in entries) {
-      if (e.eraOfProduction.isNotEmpty) counts[e.eraOfProduction] = (counts[e.eraOfProduction] ?? 0) + 1;
+      if (e.eraOfProduction.isNotEmpty)
+        counts[e.eraOfProduction] = (counts[e.eraOfProduction] ?? 0) + 1;
     }
     final sortedEras = counts.keys.toList()..sort();
 
@@ -465,9 +609,17 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(era, style: GoogleFonts.firaCode(color: kAccent, fontSize: 14.sp, fontWeight: FontWeight.w800)),
+                Text(era,
+                    style: GoogleFonts.firaCode(
+                        color: kAccent,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w800)),
                 SizedBox(height: 4.h),
-                Text('$count TOOLS', style: GoogleFonts.inter(color: kSecondaryText, fontSize: 9.sp, fontWeight: FontWeight.w700)),
+                Text('$count TOOLS',
+                    style: GoogleFonts.inter(
+                        color: kSecondaryText,
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w700)),
               ],
             ),
           );
@@ -489,7 +641,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           ),
         ),
         SizedBox(width: 12.w),
-        Expanded(child: Container(height: 1.h, color: kOutline.withValues(alpha: 0.3))),
+        Expanded(
+            child:
+                Container(height: 1.h, color: kOutline.withValues(alpha: 0.3))),
       ],
     );
   }
@@ -497,30 +651,11 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   Widget _noData() {
     return Center(
       child: Text('INSUFFICIENT DATARECORDS',
-          style: GoogleFonts.inter(color: kSecondaryText, fontSize: 10.sp, fontWeight: FontWeight.w800, letterSpacing: 1.0)),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 60.h),
-      child: Column(
-        children: [
-          Icon(Icons.query_stats_rounded, size: 64.sp, color: kAccent.withValues(alpha: 0.2)),
-          SizedBox(height: 20.h),
-          Text(
-            'THE ARCHIVE IS EMPTY',
-            style: GoogleFonts.inter(color: kSecondaryText, fontSize: 14.sp, fontWeight: FontWeight.w800, letterSpacing: 2.0),
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            'Analytics will populate once you begin cataloging.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: kSecondaryText.withValues(alpha: 0.6), fontSize: 13.sp),
-          ),
-        ],
-      ),
+          style: GoogleFonts.inter(
+              color: kSecondaryText,
+              fontSize: 10.sp,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.0)),
     );
   }
 }
@@ -554,7 +689,7 @@ class LiquidGaugePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 12.w
       ..strokeCap = StrokeCap.round;
-    
+
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius - 6.w),
       -1.5708, // Start at top
@@ -568,7 +703,7 @@ class LiquidGaugePainter extends CustomPainter {
       final innerRect = Rect.fromCircle(center: center, radius: radius - 18.w);
       canvas.save();
       canvas.clipPath(Path()..addOval(innerRect));
-      
+
       final liquidPaint = Paint()..color = color.withValues(alpha: 0.1);
       final liquidHeight = innerRect.height * value;
       canvas.drawRect(
@@ -585,6 +720,52 @@ class LiquidGaugePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant LiquidGaugePainter oldDelegate) => 
-    oldDelegate.value != value;
+  bool shouldRepaint(covariant LiquidGaugePainter oldDelegate) =>
+      oldDelegate.value != value;
+}
+
+// Blueprint grid background for stats empty state
+class _StatsGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final gridPaint = Paint()
+      ..color = kAccent.withValues(alpha: 0.05)
+      ..strokeWidth = 0.5
+      ..style = PaintingStyle.stroke;
+    const step = 28.0;
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+    }
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Compass rose ornament for the empty state circle
+class _CompassRosePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final paint = Paint()
+      ..color = kAccent.withValues(alpha: 0.2)
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+    // 8 direction spokes
+    for (int i = 0; i < 8; i++) {
+      final angle = (i * math.pi) / 4;
+      final inner = Offset(
+          center.dx + math.cos(angle) * 12, center.dy + math.sin(angle) * 12);
+      final outer = Offset(center.dx + math.cos(angle) * (size.width / 2 - 4),
+          center.dy + math.sin(angle) * (size.height / 2 - 4));
+      canvas.drawLine(inner, outer, paint);
+    }
+    canvas.drawCircle(center, size.width / 2 - 8, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

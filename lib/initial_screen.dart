@@ -20,33 +20,14 @@ class InitialScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Rich Shipyard Header Section
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Logo + Brand Badge
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      Container(width: 24.w, height: 2.h, color: kAccent),
-                      SizedBox(width: 8.w),
-                      Text(
-                        'EST. 1884',
-                        style: GoogleFonts.firaCode(
-                          color: kSecondaryText,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 2.0,
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Container(height: 1.h, color: kOutline),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 32.h),
                   Container(
-                    width: 100.w,
-                    height: 100.w,
+                    width: 80.w,
+                    height: 80.w,
                     decoration: BoxDecoration(
                       color: kPanelBg,
                       borderRadius: BorderRadius.circular(kRadiusLarge),
@@ -62,6 +43,7 @@ class InitialScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+
 
               // Hero Typography block
               Column(
