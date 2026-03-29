@@ -169,12 +169,14 @@ class _ShowcaseScreenState extends ConsumerState<ShowcaseScreen> {
     final imageProv = ref.watch(imageProvider);
     final entries = ref.watch(projectProvider).entries;
 
-    // Re-init when count changes OR when any tool content has mutated (detect by id+name+photo fingerprint)
-    final fingerprint =
-        entries.map((e) => '${e.id}|${e.toolName}|${e.photoPath}').join(',');
+    // Re-init when count changes OR when any tool content has mutated (detect by id+name+photo+type fingerprint)
+    final fingerprint = entries
+        .map((e) => '${e.id}|${e.toolName}|${e.photoPath}|${e.toolType}')
+        .join(',');
     final ringFingerprint = _rings
         .expand((r) => r.nodes)
-        .map((n) => '${n.tool.id}|${n.tool.toolName}|${n.tool.photoPath}')
+        .map((n) =>
+            '${n.tool.id}|${n.tool.toolName}|${n.tool.photoPath}|${n.tool.toolType}')
         .join(',');
     if (entries.isNotEmpty && fingerprint != ringFingerprint) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -194,10 +196,11 @@ class _ShowcaseScreenState extends ConsumerState<ShowcaseScreen> {
     } else if (entries.isEmpty && (_activeTool != null || _rings.isNotEmpty)) {
       // All entries deleted — clear the ghost card immediately
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() {
-          _rings.clear();
-          _activeTool = null;
-        });
+        if (mounted)
+          setState(() {
+            _rings.clear();
+            _activeTool = null;
+          });
       });
     }
 
